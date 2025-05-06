@@ -7,95 +7,169 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Person {
-    per_id        String      @id @default(uuid())
-    per_name      String
-    per_epithet   String
-    per_title     String
-    per_phisical_description String
-    per_height    String
-    per_anc_id    String
-    per_pronouns  Pronouns
-    per_cls_id    String
-    per_sch_id    String
-    per_occupation String
-    per_birthday  String
-    per_plc_id    String
-    per_family    String
-    per_afiliation String
-    per_status    Status
-    per_observations String
-    per_cmp_id String
-    per_first_appeared String
-    per_last_appeared String
-    per_written_by String
-    per_created_at DateTime @default(now())
-    per_updated_at DateTime @updatedAt
-    per_anc       Ancestry    @relation(fields: [per_anc_id], references: [anc_id])
-    per_cls       Class       @relation(fields: [per_cls_id], references: [cls_id])
-    per_sch       School      @relation(fields: [per_sch_id], references: [sch_id])
-    per_place     Place       @relation(fields: [per_plc_id], references: [plc_id])
-    per_cmp       Campaign    @relation(fields: [per_cmp_id], references: [cmp_id])
-    per_quotes    Quotes[]    
+model Character {
+    chr_id                      String                  @id @default(uuid())
+    chr_name                    String
+    chr_epithet                 String
+    chr_physical_description    String
+    chr_height                  String
+    chr_occupation              String
+    chr_birthday                String
+    chr_observations            String
+    chr_pronouns                Pronouns
+    chr_status                  Status
+    chr_anc_id                  String
+    chr_cls_id                  String
+    chr_sch_id                  String
+    chr_plc_id                  String
+    chr_cmp_id                  String
+    chr_first_appeared_cmp_id   String
+    chr_last_appeared_cmp_id    String
+    chr_written_by_usr_id       String
+    chr_created_by_usr_id       String
+    chr_updated_by_usr_id       String
+    chr_created_at              DateTime                @default(now())
+    chr_updated_at              DateTime                @updatedAt
+    chr_anc                     Ancestry                @relation(fields: [chr_anc_id], references: [anc_id])
+    chr_cls                     Class                   @relation(fields: [chr_cls_id], references: [cls_id])
+    chr_sch                     School                  @relation(fields: [chr_sch_id], references: [sch_id])
+    chr_place                   Place                   @relation(fields: [chr_plc_id], references: [plc_id])
+    chr_cmp                     Campaign                @relation(fields: [chr_cmp_id], references: [cmp_id])
+    chr_qte                  Quote[]    
+    chr_ttl                  Title[]
+    chr_affiliations            Affiliation[]
+    chr_source_relationships    FamilyRelationship[]    @relation("SourceCharacter")
+    chr_target_relationships    FamilyRelationship[]    @relation("TargetCharacter")
+    chr_unions1                 FamilyUnion[]           @relation("UnionCharacter1")
+    chr_unions2                 FamilyUnion[]           @relation("UnionCharacter2")
+    chr_written_by_usr          User[]                  @relation("WrittenByUser")
+    chr_created_by_usr          User[]                  @relation("CreatedByUser")
+    chr_updated_by_usr          User[]                  @relation("UpdatedByUser")
 }
 
+model Title {
+    ttl_id            String      @id @default(uuid())
+    ttl_name          String
+    ttl_description   String
+    ttl_created_at    DateTime
+    ttl_updated_at    DateTime
+    ttl_chr_id        String
+    ttl_chr           Character   @relation(fields: [ttl_chr_id], references: [chr_id])
+}
+
+
 model Ancestry {
-    anc_id        String      @id @default(uuid())
-    anc_name      String
-    anc_description String
-    anc_created_at DateTime @default(now())
-    anc_updated_at DateTime @updatedAt
-    anc_person   Person[]
+    anc_id            String      @id @default(uuid())
+    anc_name          String
+    anc_description   String
+    anc_created_at    DateTime    @default(now())
+    anc_updated_at    DateTime    @updatedAt
+    anc_chr           Character[]
 }
 
 model Class {
-    cls_id      String      @id @default(uuid())
-    cls_name    String
-    cls_description String
-    cls_created_at DateTime @default(now())
-    cls_updated_at DateTime @updatedAt
-    cls_person  Person[]
+    cls_id            String      @id @default(uuid())
+    cls_name          String
+    cls_description   String
+    cls_created_at    DateTime    @default(now())
+    cls_updated_at    DateTime    @updatedAt
+    cls_chr           Character[]
 }
 
 model School {
-    sch_id        String      @id @default(uuid())
-    sch_name      String
-    sch_description String
-    sch_created_at DateTime @default(now())
-    sch_updated_at DateTime @updatedAt
-    sch_person   Person[]
+    sch_id            String      @id @default(uuid())
+    sch_name          String
+    sch_description   String
+    sch_created_at    DateTime    @default(now())
+    sch_updated_at    DateTime    @updatedAt
+    sch_chr           Character[]
 }
 
 model Place {
-    plc_id       String      @id @default(uuid())
-    plc_name     String
-    plc_description String
-    plc_created_at DateTime @default(now())
-    plc_updated_at DateTime @updatedAt
-    plc_person   Person[]
+    plc_id            String      @id @default(uuid())
+    plc_name          String
+    plc_description   String
+    plc_created_at    DateTime    @default(now())
+    plc_updated_at    DateTime    @updatedAt
+    plc_chr           Character[]
+    plc_aff           Affiliation[]
 }
 
-model Quotes {
-    qts_id       String      @id @default(uuid())
-    qts_quote    String
-    qts_per_id   String
-    qts_source   String
-    qts_source_url String
-    qts_first_quote Boolean
-    qts_last_quote  Boolean
-    qts_created_at DateTime @default(now())
-    qts_updated_at DateTime @updatedAt
-    qts_per   Person      @relation(fields: [qts_per_id], references: [per_id])
+model Quote {
+    qte_id            String      @id @default(uuid())
+    qte_quote         String
+    qte_chr_id        String
+    qte_source        String
+    qte_source_url    String
+    qte_first_quote   Boolean
+    qte_last_quote    Boolean
+    qte_created_at    DateTime    @default(now())
+    qte_updated_at    DateTime    @updatedAt
+    qte_chr           Character   @relation(fields: [qte_chr_id], references: [chr_id])
 }
 
 model Campaign {
-    cmp_id       String      @id @default(uuid())
-    cmp_name     String
-    cmp_description String
-    cmp_created_at DateTime @default(now())
-    cmp_updated_at DateTime @updatedAt
-    cmp_per      Person[]
+    cmp_id            String      @id @default(uuid())
+    cmp_name          String
+    cmp_description   String
+    cmp_created_at    DateTime    @default(now())
+    cmp_updated_at    DateTime    @updatedAt
+    cmp_chr           Character[]
 }
+
+model FamilyRelationship {
+    rel_id            String      @id @default(uuid())
+    relationship_type String
+    chr_source_id     String
+    chr_target_id     String
+    chr_source        Character   @relation("SourceCharacter", fields: [chr_source_id], references: [chr_id])
+    chr_target        Character   @relation("TargetCharacter", fields: [chr_target_id], references: [chr_id])
+}
+
+model FamilyUnion {
+    union_id          String      @id @default(uuid())
+    union_type        String
+    chr_1_id          String
+    chr_2_id          String
+    chr_1             Character   @relation("UnionCharacter1", fields: [chr_1_id], references: [chr_id])
+    chr_2             Character   @relation("UnionCharacter2", fields: [chr_2_id], references: [chr_id])
+}
+
+model Organization {
+    org_id            String      @id @default(uuid())
+    org_name          String
+    org_description   String
+    org_created_at    DateTime
+    org_updated_at    DateTime
+    org_aff           Affiliation[]
+}
+
+model Affiliation {
+    aff_id            String        @id @default(uuid())
+    aff_role          String
+    aff_chr_id        String
+    aff_plc_id        String?
+    aff_org_id        String?
+    aff_chr           Character     @relation(fields: [aff_chr_id], references: [chr_id])
+    aff_org           Organization? @relation(fields: [aff_org_id], references: [org_id])
+    aff_plc           Place?        @relation(fields: [aff_plc_id], references: [plc_id])
+}
+
+model User {
+    usr_id            String        @id @default(uuid())
+    usr_name          String
+    usr_username      String
+    usr_password      String
+    usr_description   String
+    usr_image         String
+    usr_mare          Boolean
+    usr_created_at    DateTime
+    usr_updated_at    DateTime
+    usr_written_chr   Character[]   @relation("WrittenByUser")
+    usr_created_chr   Character[]   @relation("CreatedByUser")
+    usr_updated_chr   Character[]   @relation("UpdatedByUser")
+}
+
 
 enum Pronouns {
     he_him
