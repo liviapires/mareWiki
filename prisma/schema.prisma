@@ -1,0 +1,121 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Person {
+    per_id        String      @id @default(uuid())
+    per_name      String
+    per_epithet   String
+    per_title     String
+    per_phisical_description String
+    per_height    String
+    per_anc_id    String
+    per_pronouns  Pronouns
+    per_cls_id    String
+    per_sch_id    String
+    per_occupation String
+    per_birthday  String
+    per_plc_id    String
+    per_family    String
+    per_afiliation String
+    per_status    Status
+    per_observations String
+    per_cmp_id String
+    per_first_appeared String
+    per_last_appeared String
+    per_written_by String
+    per_created_at DateTime @default(now())
+    per_updated_at DateTime @updatedAt
+    per_anc       Ancestry    @relation(fields: [per_anc_id], references: [anc_id])
+    per_cls       Class       @relation(fields: [per_cls_id], references: [cls_id])
+    per_sch       School      @relation(fields: [per_sch_id], references: [sch_id])
+    per_place     Place       @relation(fields: [per_plc_id], references: [plc_id])
+    per_cmp       Campaign    @relation(fields: [per_cmp_id], references: [cmp_id])
+    per_quotes    Quotes[]    
+}
+
+model Ancestry {
+    anc_id        String      @id @default(uuid())
+    anc_name      String
+    anc_description String
+    anc_created_at DateTime @default(now())
+    anc_updated_at DateTime @updatedAt
+    anc_person   Person[]
+}
+
+model Class {
+    cls_id      String      @id @default(uuid())
+    cls_name    String
+    cls_description String
+    cls_created_at DateTime @default(now())
+    cls_updated_at DateTime @updatedAt
+    cls_person  Person[]
+}
+
+model School {
+    sch_id        String      @id @default(uuid())
+    sch_name      String
+    sch_description String
+    sch_created_at DateTime @default(now())
+    sch_updated_at DateTime @updatedAt
+    sch_person   Person[]
+}
+
+model Place {
+    plc_id       String      @id @default(uuid())
+    plc_name     String
+    plc_description String
+    plc_created_at DateTime @default(now())
+    plc_updated_at DateTime @updatedAt
+    plc_person   Person[]
+}
+
+model Quotes {
+    qts_id       String      @id @default(uuid())
+    qts_quote    String
+    qts_per_id   String
+    qts_source   String
+    qts_source_url String
+    qts_first_quote Boolean
+    qts_last_quote  Boolean
+    qts_created_at DateTime @default(now())
+    qts_updated_at DateTime @updatedAt
+    qts_per   Person      @relation(fields: [qts_per_id], references: [per_id])
+}
+
+model Campaign {
+    cmp_id       String      @id @default(uuid())
+    cmp_name     String
+    cmp_description String
+    cmp_created_at DateTime @default(now())
+    cmp_updated_at DateTime @updatedAt
+    cmp_per      Person[]
+}
+
+enum Pronouns {
+    he_him
+    she_her
+    they_them
+    she_he
+    they_she
+    they_he
+    they_she_he
+    unknown
+    none
+    all
+    other
+}
+
+enum Status {
+    alive
+    dead
+    missing
+    fugitive
+    imprisoned
+    unknown
+}
