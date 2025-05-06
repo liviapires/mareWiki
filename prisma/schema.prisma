@@ -91,6 +91,9 @@ model Place {
     plc_description   String
     plc_created_at    DateTime    @default(now())
     plc_updated_at    DateTime    @updatedAt
+    plc_parent_id     String?
+    plc_parent        Place?      @relation("PlaceParent", fields: [plc_parent_id], references: [plc_id])
+    plc_children      Place[]     @relation("PlaceParent")
     plc_chr           Character[]
     plc_aff           Affiliation[]
 }
