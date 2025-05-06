@@ -35,13 +35,13 @@ model Character {
     chr_sch                     School                  @relation(fields: [chr_sch_id], references: [sch_id])
     chr_place                   Place                   @relation(fields: [chr_plc_id], references: [plc_id])
     chr_cmp                     Campaign                @relation(fields: [chr_cmp_id], references: [cmp_id])
-    chr_qte                  Quote[]    
-    chr_ttl                  Title[]
+    chr_qte                     Quote[]    
+    chr_ttl                     Title[]
     chr_affiliations            Affiliation[]
     chr_source_relationships    FamilyRelationship[]    @relation("SourceCharacter")
     chr_target_relationships    FamilyRelationship[]    @relation("TargetCharacter")
-    chr_unions1                 FamilyUnion[]           @relation("UnionCharacter1")
-    chr_unions2                 FamilyUnion[]           @relation("UnionCharacter2")
+    chr_uni_1                   FamilyUnion[]           @relation("UnionCharacter1")
+    chr_uni_2                   FamilyUnion[]           @relation("UnionCharacter2")
     chr_written_by_usr          User[]                  @relation("WrittenByUser")
     chr_created_by_usr          User[]                  @relation("CreatedByUser")
     chr_updated_by_usr          User[]                  @relation("UpdatedByUser")
@@ -89,9 +89,9 @@ model Place {
     plc_id            String      @id @default(uuid())
     plc_name          String
     plc_description   String
+    plc_parent_id     String?
     plc_created_at    DateTime    @default(now())
     plc_updated_at    DateTime    @updatedAt
-    plc_parent_id     String?
     plc_parent        Place?      @relation("PlaceParent", fields: [plc_parent_id], references: [plc_id])
     plc_children      Place[]     @relation("PlaceParent")
     plc_chr           Character[]
@@ -122,7 +122,7 @@ model Campaign {
 
 model FamilyRelationship {
     rel_id            String      @id @default(uuid())
-    relationship_type String
+    rel_type          String
     chr_source_id     String
     chr_target_id     String
     chr_source        Character   @relation("SourceCharacter", fields: [chr_source_id], references: [chr_id])
@@ -130,8 +130,8 @@ model FamilyRelationship {
 }
 
 model FamilyUnion {
-    union_id          String      @id @default(uuid())
-    union_type        String
+    uni_id            String      @id @default(uuid())
+    uni_type          String
     chr_1_id          String
     chr_2_id          String
     chr_1             Character   @relation("UnionCharacter1", fields: [chr_1_id], references: [chr_id])
