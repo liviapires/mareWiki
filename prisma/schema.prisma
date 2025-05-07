@@ -20,11 +20,14 @@ model Character {
     chr_status                  Status
     chr_anc_id                  String
     chr_cls_id                  String
-    chr_sch_id                  String
+    chr_sch_id                  String?
     chr_plc_id                  String
     chr_cmp_id                  String
     chr_first_appeared_cmp_id   String
     chr_last_appeared_cmp_id    String
+    chr_archmage                Boolean
+    chr_archmage_date           String?
+    chr_archmage_plc_id         String?
     chr_written_by_usr_id       String
     chr_created_by_usr_id       String
     chr_updated_by_usr_id       String
@@ -32,31 +35,49 @@ model Character {
     chr_updated_at              DateTime                @updatedAt
     chr_anc                     Ancestry                @relation(fields: [chr_anc_id], references: [anc_id])
     chr_cls                     Class                   @relation(fields: [chr_cls_id], references: [cls_id])
-    chr_sch                     School                  @relation(fields: [chr_sch_id], references: [sch_id])
-    chr_place                   Place                   @relation(fields: [chr_plc_id], references: [plc_id])
+    chr_sch                     School?                 @relation(fields: [chr_sch_id], references: [sch_id])
+    chr_place                   Place                   @relation("PlaceCharacter", fields: [chr_plc_id], references: [plc_id])
     chr_cmp                     Campaign                @relation(fields: [chr_cmp_id], references: [cmp_id])
+    chr_archmage_plc            Place?                  @relation("PlaceArchmage", fields: [chr_archmage_plc_id], references: [plc_id])
     chr_qte                     Quote[]    
     chr_ttl                     Title[]
     chr_affiliations            Affiliation[]
-    chr_source_relationships    FamilyRelationship[]    @relation("SourceCharacter")
-    chr_target_relationships    FamilyRelationship[]    @relation("TargetCharacter")
+    chr_parent_rel              FamilyRelationship[]    @relation("ParentCharacter")
+    chr_child_rel               FamilyRelationship[]    @relation("ChildCharacter")
     chr_uni_1                   FamilyUnion[]           @relation("UnionCharacter1")
     chr_uni_2                   FamilyUnion[]           @relation("UnionCharacter2")
     chr_written_by_usr          User[]                  @relation("WrittenByUser")
     chr_created_by_usr          User[]                  @relation("CreatedByUser")
     chr_updated_by_usr          User[]                  @relation("UpdatedByUser")
+    chr_cmp_usr                 CampaignUser[]
+}
+
+model Place {
+    plc_id            String            @id @default(uuid())
+    plc_name          String
+    plc_description   String
+    plc_parent_id     String?
+    plc_created_at    DateTime          @default(now())
+    plc_updated_at    DateTime          @updatedAt
+    plc_parent        Place?            @relation("PlaceParent", fields: [plc_parent_id], references: [plc_id])
+    plc_children      Place[]           @relation("PlaceParent")
+    plc_chr_archmage  Character[]       @relation("PlaceArchmage")
+    plc_chr           Character[]       @relation("PlaceCharacter")
+    plc_aff           Affiliation[]
+    plc_org           Organization[]
 }
 
 model Title {
-    ttl_id            String      @id @default(uuid())
+    ttl_id            String        @id @default(uuid())
     ttl_name          String
     ttl_description   String
+    ttl_org_id        String?
     ttl_created_at    DateTime
     ttl_updated_at    DateTime
     ttl_chr_id        String
-    ttl_chr           Character   @relation(fields: [ttl_chr_id], references: [chr_id])
+    ttl_chr           Character     @relation(fields: [ttl_chr_id], references: [chr_id])
+    ttl_org           Organization? @relation(fields: [ttl_org_id], references: [org_id])
 }
-
 
 model Ancestry {
     anc_id            String      @id @default(uuid())
@@ -85,19 +106,6 @@ model School {
     sch_chr           Character[]
 }
 
-model Place {
-    plc_id            String      @id @default(uuid())
-    plc_name          String
-    plc_description   String
-    plc_parent_id     String?
-    plc_created_at    DateTime    @default(now())
-    plc_updated_at    DateTime    @updatedAt
-    plc_parent        Place?      @relation("PlaceParent", fields: [plc_parent_id], references: [plc_id])
-    plc_children      Place[]     @relation("PlaceParent")
-    plc_chr           Character[]
-    plc_aff           Affiliation[]
-}
-
 model Quote {
     qte_id            String      @id @default(uuid())
     qte_quote         String
@@ -118,33 +126,68 @@ model Campaign {
     cmp_created_at    DateTime    @default(now())
     cmp_updated_at    DateTime    @updatedAt
     cmp_chr           Character[]
+    cmp_usr           CampaignUser[]
+}
+
+model CampaignUser {
+    csr_cmp_id        String
+    csr_usr_id        String
+    csr_chr_id        String?
+    csr_joined_at     DateTime      @default(now())
+    csr_chr           Character?    @relation(fields: [csr_chr_id], references: [chr_id])
+    csr_cmp           Campaign      @relation(fields: [csr_cmp_id], references: [cmp_id])
+    csr_usr           User          @relation(fields: [csr_usr_id], references: [usr_id])
+    @@id([csr_cmp_id, csr_usr_id])
+}
+
+model User {
+    usr_id            String        @id @default(uuid())
+    usr_name          String
+    usr_username      String
+    usr_password      String
+    usr_description   String
+    usr_mare          Boolean
+    usr_created_at    DateTime
+    usr_updated_at    DateTime
+    usr_written_chr   Character[]   @relation("WrittenByUser")
+    usr_created_chr   Character[]   @relation("CreatedByUser")
+    usr_updated_chr   Character[]   @relation("UpdatedByUser")
+    usr_cmp           CampaignUser[]
+    usr_org           Organization[]
 }
 
 model FamilyRelationship {
     rel_id            String      @id @default(uuid())
     rel_type          String
-    chr_source_id     String
-    chr_target_id     String
-    chr_source        Character   @relation("SourceCharacter", fields: [chr_source_id], references: [chr_id])
-    chr_target        Character   @relation("TargetCharacter", fields: [chr_target_id], references: [chr_id])
+    rel_chr_parent_id String
+    rel_chr_child_id  String
+    rel_chr_parent    Character   @relation("ParentCharacter", fields: [rel_chr_parent_id], references: [chr_id])
+    rel_chr_child     Character   @relation("ChildCharacter", fields: [rel_chr_child_id], references: [chr_id])
 }
 
 model FamilyUnion {
     uni_id            String      @id @default(uuid())
     uni_type          String
-    chr_1_id          String
-    chr_2_id          String
-    chr_1             Character   @relation("UnionCharacter1", fields: [chr_1_id], references: [chr_id])
-    chr_2             Character   @relation("UnionCharacter2", fields: [chr_2_id], references: [chr_id])
+    uni_first_chr_id  String
+    uni_second_chr_id String
+    uni_first_chr     Character   @relation("UnionCharacter1", fields: [uni_first_chr_id], references: [chr_id])
+    uni_second_chr    Character   @relation("UnionCharacter2", fields: [uni_second_chr_id], references: [chr_id])
 }
 
 model Organization {
-    org_id            String      @id @default(uuid())
-    org_name          String
-    org_description   String
-    org_created_at    DateTime
-    org_updated_at    DateTime
-    org_aff           Affiliation[]
+    org_id                String      @id @default(uuid())
+    org_name              String
+    org_description       String
+    org_foundation_date   String
+    org_observations      String
+    org_plc_id            String?
+    org_created_by_usr_id String
+    org_created_at        DateTime
+    org_updated_at        DateTime
+    org_aff               Affiliation[]
+    org_plc               Place?      @relation(fields: [org_plc_id], references: [plc_id])
+    org_created_by_usr    User        @relation(fields: [org_created_by_usr_id], references: [usr_id])
+    org_ttl               Title[]
 }
 
 model Affiliation {
@@ -157,22 +200,6 @@ model Affiliation {
     aff_org           Organization? @relation(fields: [aff_org_id], references: [org_id])
     aff_plc           Place?        @relation(fields: [aff_plc_id], references: [plc_id])
 }
-
-model User {
-    usr_id            String        @id @default(uuid())
-    usr_name          String
-    usr_username      String
-    usr_password      String
-    usr_description   String
-    usr_image         String
-    usr_mare          Boolean
-    usr_created_at    DateTime
-    usr_updated_at    DateTime
-    usr_written_chr   Character[]   @relation("WrittenByUser")
-    usr_created_chr   Character[]   @relation("CreatedByUser")
-    usr_updated_chr   Character[]   @relation("UpdatedByUser")
-}
-
 
 enum Pronouns {
     he_him
