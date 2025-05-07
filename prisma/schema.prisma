@@ -40,22 +40,25 @@ model Character {
     chr_cmp                     Campaign                @relation(fields: [chr_cmp_id], references: [cmp_id])
     chr_archmage_plc            Place?                  @relation("PlaceArchmage", fields: [chr_archmage_plc_id], references: [plc_id])
     chr_qte                     Quote[]    
-    chr_ttl                     Title[]
+    chr_ctl                     CharacterTitle[]
     chr_affiliations            Affiliation[]
     chr_parent_rel              FamilyRelationship[]    @relation("ParentCharacter")
     chr_child_rel               FamilyRelationship[]    @relation("ChildCharacter")
-    chr_uni_1                   FamilyUnion[]           @relation("UnionCharacter1")
-    chr_uni_2                   FamilyUnion[]           @relation("UnionCharacter2")
+    chr_uni_first               FamilyUnion[]           @relation("UnionCharacter1")
+    chr_uni_second              FamilyUnion[]           @relation("UnionCharacter2")
     chr_written_by_usr          User[]                  @relation("WrittenByUser")
     chr_created_by_usr          User[]                  @relation("CreatedByUser")
     chr_updated_by_usr          User[]                  @relation("UpdatedByUser")
     chr_cmp_usr                 CampaignUser[]
+    chr_alc                     AlchemicalCompound[]
 }
 
 model Place {
     plc_id            String            @id @default(uuid())
     plc_name          String
     plc_description   String
+    plc_type          String
+    plc_observations  String
     plc_parent_id     String?
     plc_created_at    DateTime          @default(now())
     plc_updated_at    DateTime          @updatedAt
@@ -65,18 +68,64 @@ model Place {
     plc_chr           Character[]       @relation("PlaceCharacter")
     plc_aff           Affiliation[]
     plc_org           Organization[]
+    plc_mgt_city      MagobolTeam[]     @relation("MagobolCity")
+    plc_mgt_country   MagobolTeam[]     @relation("MagobolCountry")
+    plc_dis           Dish[]            
+    plc_drk           Drink[]
+    plc_alc           AlchemicalCompound[]
+    plc_cre           Creature[]
 }
 
-model Title {
-    ttl_id            String        @id @default(uuid())
-    ttl_name          String
-    ttl_description   String
-    ttl_org_id        String?
-    ttl_created_at    DateTime
-    ttl_updated_at    DateTime
-    ttl_chr_id        String
-    ttl_chr           Character     @relation(fields: [ttl_chr_id], references: [chr_id])
-    ttl_org           Organization? @relation(fields: [ttl_org_id], references: [org_id])
+model CharacterTitle {
+    ctl_id            String        @id @default(uuid())
+    ctl_name          String
+    ctl_description   String
+    ctl_org_id        String?
+    ctl_chr_id        String
+    ctl_created_at    DateTime      @default(now())
+    ctl_updated_at    DateTime      @updatedAt
+    ctl_chr           Character     @relation(fields: [ctl_chr_id], references: [chr_id])
+    ctl_org           Organization? @relation(fields: [ctl_org_id], references: [org_id])
+}
+
+model Deity {
+    dty_id            String      @id @default(uuid())
+    dty_name          String
+    dty_description   String
+    dty_symbol        String
+    dty_observation   String
+    dty_created_at    DateTime    @default(now())
+    dty_updated_at    DateTime    @updatedAt
+    dty_dtl           DeityTitle[]
+    dty_dte           DeityEpithet[]
+    dty_dtd           DeityDomain[]
+}
+
+model DeityTitle {
+    dtl_id            String      @id @default(uuid())
+    dtl_name          String
+    dtl_dty_id        String
+    dtl_created_at    DateTime    @default(now())
+    dtl_updated_at    DateTime    @updatedAt
+    dtl_dty           Deity       @relation(fields: [dtl_dty_id], references: [dty_id])
+}
+
+model DeityEpithet {
+    dte_id            String      @id @default(uuid())
+    dte_name          String
+    dte_dty_id        String
+    dte_created_at    DateTime    @default(now())
+    dte_updated_at    DateTime    @updatedAt
+    dte_dty           Deity       @relation(fields: [dte_dty_id], references: [dty_id])
+}
+
+model DeityDomain {
+    dtd_id            String      @id @default(uuid())
+    dtd_name          String
+    dtd_dty_id        String
+    dtd_created_at    DateTime    @default(now())
+    dtd_updated_at    DateTime    @updatedAt
+    dtd_dty           Deity       @relation(fields: [dtd_dty_id], references: [dty_id])
 }
 
 model Ancestry {
@@ -133,7 +182,9 @@ model CampaignUser {
     csr_cmp_id        String
     csr_usr_id        String
     csr_chr_id        String?
-    csr_joined_at     DateTime      @default(now())
+    csr_joined_at     DateTime
+    csr_created_at    DateTime      @default(now())
+    csr_updated_at    DateTime      @updatedAt
     csr_chr           Character?    @relation(fields: [csr_chr_id], references: [chr_id])
     csr_cmp           Campaign      @relation(fields: [csr_cmp_id], references: [cmp_id])
     csr_usr           User          @relation(fields: [csr_usr_id], references: [usr_id])
@@ -147,8 +198,8 @@ model User {
     usr_password      String
     usr_description   String
     usr_mare          Boolean
-    usr_created_at    DateTime
-    usr_updated_at    DateTime
+    usr_created_at    DateTime      @default(now())
+    usr_updated_at    DateTime      @updatedAt
     usr_written_chr   Character[]   @relation("WrittenByUser")
     usr_created_chr   Character[]   @relation("CreatedByUser")
     usr_updated_chr   Character[]   @relation("UpdatedByUser")
@@ -161,6 +212,8 @@ model FamilyRelationship {
     rel_type          String
     rel_chr_parent_id String
     rel_chr_child_id  String
+    rel_created_at    DateTime    @default(now())
+    rel_updated_at    DateTime    @updatedAt
     rel_chr_parent    Character   @relation("ParentCharacter", fields: [rel_chr_parent_id], references: [chr_id])
     rel_chr_child     Character   @relation("ChildCharacter", fields: [rel_chr_child_id], references: [chr_id])
 }
@@ -170,6 +223,8 @@ model FamilyUnion {
     uni_type          String
     uni_first_chr_id  String
     uni_second_chr_id String
+    uni_created_at    DateTime    @default(now())
+    uni_updated_at    DateTime    @updatedAt
     uni_first_chr     Character   @relation("UnionCharacter1", fields: [uni_first_chr_id], references: [chr_id])
     uni_second_chr    Character   @relation("UnionCharacter2", fields: [uni_second_chr_id], references: [chr_id])
 }
@@ -181,12 +236,12 @@ model Organization {
     org_observations      String
     org_plc_id            String?
     org_created_by_usr_id String
-    org_created_at        DateTime
-    org_updated_at        DateTime
+    org_created_at        DateTime   @default(now())
+    org_updated_at        DateTime   @updatedAt
     org_aff               Affiliation[]
     org_plc               Place?      @relation(fields: [org_plc_id], references: [plc_id])
     org_created_by_usr    User        @relation(fields: [org_created_by_usr_id], references: [usr_id])
-    org_ttl               Title[]
+    org_ttl               CharacterTitle[]
     org_names             OrganizationName[]
 }
 
@@ -201,6 +256,22 @@ model OrganizationName {
     orn_org           Organization    @relation(fields: [orn_org_id], references: [org_id])
 }
 
+model MagobolTeam {
+    mgt_id            String      @id @default(uuid())
+    mgt_name          String
+    mgt_description   String
+    mgt_city_id       String
+    mgt_country_id    String
+    mgt_symbol        String
+    mgt_colors        Colors
+    mgt_league        String
+    mgt_created_at    DateTime    @default(now())
+    mgt_updated_at    DateTime    @updatedAt
+    mgt_city          Place?      @relation("MagobolCity", fields: [mgt_city_id], references: [plc_id])
+    mgt_country       Place?      @relation("MagobolCountry", fields: [mgt_country_id], references: [plc_id])
+    mgt_aff           Affiliation[]
+}
+
 model Affiliation {
     aff_id            String        @id @default(uuid())
     aff_role          String
@@ -208,10 +279,122 @@ model Affiliation {
     aff_chr_id        String
     aff_plc_id        String?
     aff_org_id        String?
+    aff_mgt_id        String?
+    aff_created_at    DateTime      @default(now())
+    aff_updated_at    DateTime      @updatedAt
     aff_chr           Character     @relation(fields: [aff_chr_id], references: [chr_id])
     aff_org           Organization? @relation(fields: [aff_org_id], references: [org_id])
     aff_plc           Place?        @relation(fields: [aff_plc_id], references: [plc_id])
+    aff_mgt           MagobolTeam?  @relation(fields: [aff_mgt_id], references: [mgt_id])
 }
+
+model Beverage {
+    bvr_id            String      @id @default(uuid())
+    bvr_name          String
+    bvr_description   String
+    bvr_created_at    DateTime    @default(now())
+    bvr_updated_at    DateTime    @updatedAt
+    bvr_ing           Ingredient[]
+}
+
+model Drink {
+    drk_id            String      @id @default(uuid())
+    drk_name          String
+    drk_description   String
+    drk_plc_id        String
+    drk_created_at    DateTime    @default(now())
+    drk_updated_at    DateTime    @updatedAt
+    drk_plc           Place       @relation(fields: [drk_plc_id], references: [plc_id])
+    drk_ing           Ingredient[]
+}
+
+model Food {
+    foo_id             String     @id @default(uuid())
+    foo_name           String
+    foo_description    String
+    foo_created_at     DateTime   @default(now())
+    foo_updated_at     DateTime   @updatedAt
+    foo_ing           Ingredient[]
+}
+
+model Dish {
+    dis_id            String      @id @default(uuid())
+    dis_name          String
+    dis_description   String
+    dis_plc_id        String
+    dis_created_at    DateTime    @default(now())
+    dis_updated_at    DateTime    @updatedAt
+    dis_plc           Place       @relation(fields: [dis_plc_id], references: [plc_id])
+    dis_ing           Ingredient[]
+}
+
+model AlchemicalCompound {
+    alc_id            String      @id @default(uuid())
+    alc_name          String
+    alc_type          String
+    alc_function      String
+    alc_plc_id        String?
+    alc_chr_id        String?
+    alc_created_at    DateTime    @default(now())
+    alc_updated_at    DateTime    @updatedAt
+    alc_ing           Ingredient[]
+    alc_plc           Place?      @relation(fields: [alc_plc_id], references: [plc_id])
+    alc_chr           Character?   @relation(fields: [alc_chr_id], references: [chr_id])
+}
+
+model Ingredient {
+    ing_id            String                @id @default(uuid())
+    ing_drk_id        String?
+    ing_dis_id        String?
+    ing_foo_id        String?
+    ing_bvr_id        String?
+    ing_alc_id        String?
+    ing_quantity      String
+    ing_created_at    DateTime              @default(now())
+    ing_updated_at    DateTime              @updatedAt
+    ing_drk           Drink?                @relation(fields: [ing_drk_id], references: [drk_id])
+    ing_dis           Dish?                 @relation(fields: [ing_dis_id], references: [dis_id])
+    ing_foo           Food?                 @relation(fields: [ing_foo_id], references: [foo_id])
+    ing_bvr           Beverage?             @relation(fields: [ing_bvr_id], references: [bvr_id])
+    ing_alc           AlchemicalCompound?   @relation(fields: [ing_alc_id], references: [alc_id])
+}
+
+model Creature {
+    cre_id            String      @id @default(uuid())
+    cre_name          String
+    cre_type          String
+    cre_description   String
+    cre_observations  String
+    cre_plc_id        String?
+    cre_created_at    DateTime    @default(now())
+    cre_updated_at    DateTime    @updatedAt
+    cre_plc           Place?      @relation(fields: [cre_plc_id], references: [plc_id])
+}
+
+model Dragon {
+    drg_id            String      @id @default(uuid())
+    drg_name          String
+    drg_type          String
+    drg_form          String
+    drg_magic         String
+    drg_breath        String
+    drg_description   String
+    drg_observations  String
+    drg_created_at    DateTime    @default(now())
+    drg_updated_at    DateTime    @updatedAt
+    drg_dge           DragonEpithet[]
+}
+
+model DragonEpithet {
+    dge_id            String      @id @default(uuid())
+    dge_name          String
+    dge_drg_id        String
+    dge_created_at    DateTime    @default(now())
+    dge_updated_at    DateTime    @updatedAt
+    dge_dragon        Dragon      @relation(fields: [dge_drg_id], references: [drg_id])
+}
+
+// enums
 
 enum Pronouns {
     he_him
@@ -234,4 +417,21 @@ enum Status {
     fugitive
     imprisoned
     unknown
+}
+
+enum Colors {
+    red
+    blue
+    green
+    yellow
+    orange
+    purple
+    pink
+    brown
+    black
+    white
+    gray
+    gold
+    silver
+    bronze
 }
