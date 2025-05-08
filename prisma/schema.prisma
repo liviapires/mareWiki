@@ -51,6 +51,7 @@ model Character {
     chr_updated_by_usr          User[]                  @relation("UpdatedByUser")
     chr_cmp_usr                 CampaignUser[]
     chr_alc                     AlchemicalCompound[]
+    chr_itm                     ItemOwner[]
 }
 
 model Place {
@@ -74,6 +75,7 @@ model Place {
     plc_drk           Drink[]
     plc_alc           AlchemicalCompound[]
     plc_cre           Creature[]
+    plc_sng           Song[]
 }
 
 model CharacterTitle {
@@ -176,6 +178,18 @@ model Campaign {
     cmp_updated_at    DateTime    @updatedAt
     cmp_chr           Character[]
     cmp_usr           CampaignUser[]
+    cmp_eps           Episode[]
+}
+
+model Episode {
+    eps_id            String      @id @default(uuid())
+    eps_number        Int
+    eps_name          String
+    eps_date          DateTime
+    eps_cmp_id        String?
+    eps_created_at    DateTime    @default(now())
+    eps_updated_at    DateTime    @updatedAt
+    eps_cmp           Campaign?    @relation(fields: [eps_cmp_id], references: [cmp_id])
 }
 
 model CampaignUser {
@@ -392,6 +406,55 @@ model DragonEpithet {
     dge_created_at    DateTime    @default(now())
     dge_updated_at    DateTime    @updatedAt
     dge_dragon        Dragon      @relation(fields: [dge_drg_id], references: [drg_id])
+}
+
+model Item {
+    itm_id                  String      @id @default(uuid())
+    itm_name                String
+    itm_description         String
+    itm_type                String
+    itm_subtype             String
+    itm_magical_properties  String
+    itm_value               String
+    itm_cmp_id              String?
+    itm_created_at          DateTime    @default(now())
+    itm_updated_at          DateTime    @updatedAt
+    itm_own                 ItemOwner[]
+}
+
+model ItemOwner {
+    iow_id            String      @id @default(uuid())
+    iow_chr_id        String
+    iow_itm_id        String
+    iow_created_at    DateTime    @default(now())
+    iow_updated_at    DateTime    @updatedAt
+    iow_chr           Character   @relation(fields: [iow_chr_id], references: [chr_id])
+    iow_itm           Item        @relation(fields: [iow_itm_id], references: [itm_id])
+}
+
+model Book {
+    bok_id            String      @id @default(uuid())
+    bok_name          String
+    bok_description   String
+    bok_author        String
+    bok_type          String
+    bok_cmp_id        String?
+    bok_created_at    DateTime    @default(now())
+    bok_updated_at    DateTime    @updatedAt
+}
+
+model Song {
+    sng_id            String      @id @default(uuid())
+    sng_name          String
+    sng_description   String
+    sng_author        String
+    sng_genre         String
+    sng_lyrics        String?
+    sng_plc_id        String?
+    sng_cmp_id        String?
+    sng_created_at    DateTime    @default(now())
+    sng_updated_at    DateTime    @updatedAt
+    sng_plc           Place?      @relation(fields: [sng_plc_id], references: [plc_id])
 }
 
 // enums
