@@ -10,7 +10,6 @@ datasource db {
 model Character {
     chr_id                      String                  @id @default(uuid())
     chr_name                    String
-    chr_epithet                 String
     chr_physical_description    String
     chr_height                  String
     chr_occupation              String
@@ -22,10 +21,10 @@ model Character {
     chr_cls_id                  String
     chr_sch_id                  String?
     chr_plc_id                  String
-    chr_cmp_id                  String
-    chr_first_appeared_cmp_id   String
-    chr_last_appeared_cmp_id    String
-    chr_umal_student            Boolean
+    chr_cmp_id                  String?
+    chr_first_appeared_eps_id   String
+    chr_last_appeared_eps_id    String
+    chr_student                 Boolean
     chr_fty_id                  String?
     chr_archmage                Boolean
     chr_archmage_date           String?
@@ -36,10 +35,13 @@ model Character {
     chr_created_at              DateTime                @default(now())
     chr_updated_at              DateTime                @updatedAt
     chr_anc                     Ancestry                @relation(fields: [chr_anc_id], references: [anc_id])
+    chr_ept                     Epithet[]
     chr_cls                     Class                   @relation(fields: [chr_cls_id], references: [cls_id])
     chr_sch                     School?                 @relation(fields: [chr_sch_id], references: [sch_id])
     chr_place                   Place                   @relation("PlaceCharacter", fields: [chr_plc_id], references: [plc_id])
-    chr_cmp                     Campaign                @relation(fields: [chr_cmp_id], references: [cmp_id])
+    chr_cmp                     Campaign?               @relation(fields: [chr_cmp_id], references: [cmp_id])
+    chr_first_appeared_eps      Episode?                @relation("FirstAppearedEpisode", fields: [chr_first_appeared_eps_id], references: [eps_id])
+    chr_last_appeared_eps       Episode?                @relation("LastAppearedEpisode", fields: [chr_last_appeared_eps_id], references: [eps_id])
     chr_archmage_plc            Place?                  @relation("PlaceArchmage", fields: [chr_archmage_plc_id], references: [plc_id])
     chr_fty                     Fraternity?             @relation("Fraternity", fields: [chr_fty_id], references: [fty_id])
     chr_qte                     Quote[]    
@@ -58,6 +60,15 @@ model Character {
     chr_igb                     InGameBook[]
     chr_fty_president           Fraternity[]            @relation("FraternityPresident")
     chr_umf                     FraternityFounder[]
+}
+
+model Epithet {
+    ept_id                      String                  @id @default(uuid())
+    ept_name                    String
+    ept_chr_id                  String
+    ept_created_at              DateTime                @default(now())
+    ept_updated_at              DateTime                @updatedAt
+    ept_chr                     Character               @relation(fields: [ept_chr_id], references: [chr_id])
 }
 
 model Place {
@@ -200,6 +211,8 @@ model Episode {
     eps_updated_at              DateTime                @updatedAt
     eps_cmp                     Campaign?               @relation(fields: [eps_cmp_id], references: [cmp_id])
     eps_sng                     Song[]
+    eps_chr                     Character[]             @relation("FirstAppearedEpisode")
+    eps_chr_last                Character[]             @relation("LastAppearedEpisode")
 }
 
 model CampaignUser {
