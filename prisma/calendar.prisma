@@ -1,0 +1,99 @@
+model Calendar {
+    cal_id                      String                  @id @default(uuid())
+    cal_name                    String
+    cal_description             String
+    cal_days_per_week           Int
+    cal_days_per_month          Int
+    cal_days_per_year           Int
+    cal_created_at              DateTime                @default(now())
+    cal_updated_at              DateTime                @updatedAt
+    cal_cwd                     CalendarWeekDay[]
+    cal_cmo                     CalendarMonth[]
+    cal_cse                     CalendarSeason[]
+    cal_mon                     CalendarMoon[]
+    cal_cdt                     CalendarDate[]
+}
+
+model CalendarWeekDay {
+    cwd_id                      String                  @id @default(uuid())
+    cwd_name                    String
+    cwd_cal_id                  String
+    cwd_created_at              DateTime                @default(now())
+    cwd_updated_at              DateTime                @updatedAt
+    cwd_cal                     Calendar                @relation(fields: [cwd_cal_id], references: [cal_id])
+}
+
+model CalendarMonth {
+    cmo_id                      String                  @id @default(uuid())
+    cmo_name                    String
+    cmo_cal_id                  String
+    cmo_created_at              DateTime                @default(now())
+    cmo_updated_at              DateTime                @updatedAt
+    cmo_cal                     Calendar                @relation(fields: [cmo_cal_id], references: [cal_id])
+}
+
+model CalendarSeason {
+    cse_id                      String                  @id @default(uuid())
+    cse_name                    String
+    cse_cal_id                  String
+    cse_start_date_id           String
+    cse_end_date_id             String
+    cse_created_at              DateTime                @default(now())
+    cse_updated_at              DateTime                @updatedAt
+    cse_cal                     Calendar                @relation(fields: [cse_cal_id], references: [cal_id])
+    cse_start_date              CalendarDate            @relation("StartDate", fields: [cse_start_date_id], references: [cdt_id])
+    cse_end_date                CalendarDate            @relation("EndDate", fields: [cse_end_date_id], references: [cdt_id])
+}
+
+model CalendarMoon {
+    cmn_id                      String                  @id @default(uuid())
+    cmn_name                    String
+    cmn_color                   Colors
+    cmn_cal_id                  String
+    cmn_created_at              DateTime                @default(now())
+    cmn_updated_at              DateTime                @updatedAt
+    cmn_cal                     Calendar                @relation(fields: [cmn_cal_id], references: [cal_id])
+    cmn_mph                     MoonPhase[]
+}
+
+model MoonPhase {
+    mph_id                      String                  @id @default(uuid())
+    mph_name                    String
+    mph_description             String
+    mph_cmn_id                  String
+    mph_created_at              DateTime                @default(now())
+    mph_updated_at              DateTime                @updatedAt
+    mph_cmn                     CalendarMoon            @relation(fields: [mph_cmn_id], references: [cmn_id])
+}
+
+model CalendarDate {
+    cdt_id                      String                  @id @default(uuid())
+    cdt_day                     Int
+    cdt_month                   Int
+    cdt_year                    Int
+    cdt_cal_id                  String
+    cdt_created_at              DateTime                @default(now())
+    cdt_updated_at              DateTime                @updatedAt
+    cdt_cal                     Calendar                @relation(fields: [cdt_cal_id], references: [cal_id])
+    cdt_start_cse               CalendarSeason[]        @relation("StartDate")
+    cdt_end_cse                 CalendarSeason[]        @relation("EndDate")
+    cdt_start_cev               CalendarEvent[]         @relation("StartDate")
+    cdt_end_cev                 CalendarEvent[]         @relation("EndDate")
+}
+
+model CalendarEvent {
+    cev_id                      String                  @id @default(uuid())
+    cev_name                    String
+    cev_description             String
+    cev_one_day_event           Boolean
+    cev_day_quantity            Int
+    cev_start_cdt_id            String
+    cev_end_cdt_id              String
+    cev_cal_id                  String
+    cev_recurring               Boolean
+    cev_recurring_type          RecurringType
+    cev_created_at              DateTime                @default(now())
+    cev_updated_at              DateTime                @updatedAt
+    cev_start_cdt               CalendarDate            @relation("StartDate", fields: [cev_start_cdt_id], references: [cdt_id])
+    cev_end_cdt                 CalendarDate            @relation("EndDate", fields: [cev_end_cdt_id], references: [cdt_id])
+}
