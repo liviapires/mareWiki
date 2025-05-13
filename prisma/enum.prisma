@@ -1,0 +1,54 @@
+enum Pronouns {
+    he_him
+    she_her
+    they_them
+    she_he
+    they_she
+    they_he
+    they_she_he
+    unknown
+    none
+    all
+    other
+}
+
+enum Status {
+    alive
+    dead
+    missing
+    fugitive
+    imprisoned
+    unknown
+}
+
+enum Colors {
+    red
+    blue
+    green
+    yellow
+    orange
+    purple
+    pink
+    brown
+    black
+    white
+    gray
+    gold
+    silver
+    bronze
+}
+
+enum OutOfGameStoryType {
+    book
+    tale
+    news
+    article
+}
+
+enum RecurringType {
+    daily
+    weekly
+    monthly
+    yearly
+    once
+}

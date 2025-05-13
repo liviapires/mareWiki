@@ -1,0 +1,39 @@
+model Deity {
+    dty_id                      String                  @id @default(uuid())
+    dty_name                    String
+    dty_description             String
+    dty_symbol                  String
+    dty_observation             String
+    dty_created_at              DateTime                @default(now())
+    dty_updated_at              DateTime                @updatedAt
+    dty_dtl                     DeityTitle[]
+    dty_dte                     DeityEpithet[]
+    dty_dtd                     DeityDomain[]
+}
+
+model DeityTitle {
+    dtl_id                      String                  @id @default(uuid())
+    dtl_name                    String
+    dtl_dty_id                  String
+    dtl_created_at              DateTime                @default(now())
+    dtl_updated_at              DateTime                @updatedAt
+    dtl_dty                     Deity                   @relation(fields: [dtl_dty_id], references: [dty_id])
+}
+
+model DeityEpithet {
+    dte_id                      String                  @id @default(uuid())
+    dte_name                    String
+    dte_dty_id                  String
+    dte_created_at              DateTime                @default(now())
+    dte_updated_at              DateTime                @updatedAt
+    dte_dty                     Deity                   @relation(fields: [dte_dty_id], references: [dty_id])
+}
+
+model DeityDomain {
+    dtd_id                      String                  @id @default(uuid())
+    dtd_name                    String
+    dtd_dty_id                  String
+    dtd_created_at              DateTime                @default(now())
+    dtd_updated_at              DateTime                @updatedAt
+    dtd_dty                     Deity                   @relation(fields: [dtd_dty_id], references: [dty_id])
+}

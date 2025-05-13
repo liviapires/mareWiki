@@ -1,0 +1,25 @@
+model Campaign {
+    cmp_id                      String                  @id @default(uuid())
+    cmp_name                    String
+    cmp_description             String
+    cmp_created_at              DateTime                @default(now())
+    cmp_updated_at              DateTime                @updatedAt
+    cmp_chr                     Character[]
+    cmp_usr                     CampaignUser[]
+    cmp_eps                     Episode[]
+    cmp_sng                     Song[]
+}
+
+model Episode {
+    eps_id                      String                  @id @default(uuid())
+    eps_number                  Int
+    eps_name                    String
+    eps_date                    DateTime
+    eps_cmp_id                  String?
+    eps_created_at              DateTime                @default(now())
+    eps_updated_at              DateTime                @updatedAt
+    eps_cmp                     Campaign?               @relation(fields: [eps_cmp_id], references: [cmp_id])
+    eps_sng                     Song[]
+    eps_chr                     Character[]             @relation("FirstAppearedEpisode")
+    eps_chr_last                Character[]             @relation("LastAppearedEpisode")
+}

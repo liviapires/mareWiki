@@ -1,0 +1,28 @@
+model User {
+    usr_id                      String                  @id @default(uuid())
+    usr_name                    String
+    usr_username                String
+    usr_password                String
+    usr_description             String
+    usr_mare                    Boolean
+    usr_created_at              DateTime                @default(now())
+    usr_updated_at              DateTime                @updatedAt
+    usr_written_chr             Character[]             @relation("WrittenByUser")
+    usr_created_chr             Character[]             @relation("CreatedByUser")
+    usr_updated_chr             Character[]             @relation("UpdatedByUser")
+    usr_cmp                     CampaignUser[]
+    usr_org                     Organization[]
+}
+
+model CampaignUser {
+    csr_cmp_id                  String
+    csr_usr_id                  String
+    csr_chr_id                  String?
+    csr_joined_at               DateTime
+    csr_created_at              DateTime                @default(now())
+    csr_updated_at              DateTime                @updatedAt
+    csr_chr                     Character?              @relation(fields: [csr_chr_id], references: [chr_id])
+    csr_cmp                     Campaign                @relation(fields: [csr_cmp_id], references: [cmp_id])
+    csr_usr                     User                    @relation(fields: [csr_usr_id], references: [usr_id])
+    @@id([csr_cmp_id, csr_usr_id])
+}

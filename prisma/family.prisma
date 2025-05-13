@@ -1,0 +1,21 @@
+model FamilyRelationship {
+    rel_id                      String                  @id @default(uuid())
+    rel_type                    String
+    rel_chr_parent_id           String
+    rel_chr_child_id            String
+    rel_created_at              DateTime                @default(now())
+    rel_updated_at              DateTime                @updatedAt
+    rel_chr_parent              Character               @relation("ParentCharacter", fields: [rel_chr_parent_id], references: [chr_id])
+    rel_chr_child               Character               @relation("ChildCharacter", fields: [rel_chr_child_id], references: [chr_id])
+}
+
+model FamilyUnion {
+    uni_id                      String                  @id @default(uuid())
+    uni_type                    String
+    uni_first_chr_id            String
+    uni_second_chr_id           String
+    uni_created_at              DateTime                @default(now())
+    uni_updated_at              DateTime                @updatedAt
+    uni_first_chr               Character               @relation("UnionCharacter1", fields: [uni_first_chr_id], references: [chr_id])
+    uni_second_chr              Character               @relation("UnionCharacter2", fields: [uni_second_chr_id], references: [chr_id])
+}

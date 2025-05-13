@@ -1,0 +1,11 @@
+model Creature {
+    cre_id                      String                  @id @default(uuid())
+    cre_name                    String
+    cre_type                    String
+    cre_description             String
+    cre_observations            String
+    cre_plc_id                  String?
+    cre_created_at              DateTime                @default(now())
+    cre_updated_at              DateTime                @updatedAt
+    cre_plc                     Place?                  @relation(fields: [cre_plc_id], references: [plc_id])
+}

@@ -1,0 +1,17 @@
+model Class {
+    cls_id                      String                  @id @default(uuid())
+    cls_name                    String
+    cls_description             String
+    cls_created_at              DateTime                @default(now())
+    cls_updated_at              DateTime                @updatedAt
+    cls_chr                     Character[]
+}
+
+model School {
+    sch_id                      String                  @id @default(uuid())
+    sch_name                    String
+    sch_description             String
+    sch_created_at              DateTime                @default(now())
+    sch_updated_at              DateTime                @updatedAt
+    sch_chr                     Character[]
+}

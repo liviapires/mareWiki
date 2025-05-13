@@ -1,0 +1,31 @@
+model Fraternity {
+    fty_id                      String                  @id @default(uuid())
+    fty_name                    String
+    fty_motto                   String
+    fty_virtues                 String
+    fty_description             String
+    fty_colors                  Colors
+    fty_symbol                  String
+    fty_drk_id                  String?
+    fty_president_id            String?
+    fty_foundation_date         String
+    fty_cape                    String
+    fty_plc_id                  String
+    fty_created_at              DateTime                @default(now())
+    fty_updated_at              DateTime                @updatedAt
+    fty_chr                     Character[]             @relation("Fraternity")
+    fty_umf                     FraternityFounder[]
+    fty_plc                     Place                   @relation(fields: [fty_plc_id], references: [plc_id])
+    fty_drk                     Drink?                  @relation(fields: [fty_drk_id], references: [drk_id])
+    fty_president               Character?              @relation("FraternityPresident", fields: [fty_president_id], references: [chr_id])
+}
+
+model FraternityFounder {
+    umf_id                      String                  @id @default(uuid())
+    umf_fty_id                  String
+    umf_chr_id                  String
+    umf_created_at              DateTime                @default(now())
+    umf_updated_at              DateTime                @updatedAt
+    umf_fty                     Fraternity              @relation(fields: [umf_fty_id], references: [fty_id])
+    umf_chr                     Character               @relation(fields: [umf_chr_id], references: [chr_id])
+}

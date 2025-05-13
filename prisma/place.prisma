@@ -1,0 +1,25 @@
+model Place {
+    plc_id                      String                  @id @default(uuid())
+    plc_name                    String
+    plc_description             String
+    plc_type                    String
+    plc_observations            String
+    plc_parent_id               String?
+    plc_created_at              DateTime                @default(now())
+    plc_updated_at              DateTime                @updatedAt
+    plc_parent                  Place?                  @relation("PlaceParent", fields: [plc_parent_id], references: [plc_id])
+    plc_children                Place[]                 @relation("PlaceParent")
+    plc_chr_archmage            Character[]             @relation("PlaceArchmage")
+    plc_chr                     Character[]             @relation("PlaceCharacter")
+    plc_aff                     Affiliation[]
+    plc_org                     Organization[]
+    plc_mgt_city                MagobolTeam[]           @relation("MagobolCity")
+    plc_mgt_country             MagobolTeam[]           @relation("MagobolCountry")
+    plc_dis                     Dish[]
+    plc_drk                     Drink[]
+    plc_alc                     AlchemicalCompound[]
+    plc_cre                     Creature[]
+    plc_sng                     Song[]
+    plc_art                     Art[]
+    plc_fty                     Fraternity[]
+}

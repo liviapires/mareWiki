@@ -1,0 +1,15 @@
+model MagobolTeam {
+    mgt_id                      String                  @id @default(uuid())
+    mgt_name                    String
+    mgt_description             String
+    mgt_city_id                 String
+    mgt_country_id              String
+    mgt_symbol                  String
+    mgt_colors                  Colors
+    mgt_league                  String
+    mgt_created_at              DateTime                @default(now())
+    mgt_updated_at              DateTime                @updatedAt
+    mgt_city                    Place?                  @relation("MagobolCity", fields: [mgt_city_id], references: [plc_id])
+    mgt_country                 Place?                  @relation("MagobolCountry", fields: [mgt_country_id], references: [plc_id])
+    mgt_aff                     Affiliation[]
+}

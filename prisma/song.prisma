@@ -1,0 +1,19 @@
+model Song {
+    sng_id                      String                  @id @default(uuid())
+    sng_name                    String
+    sng_description             String
+    sng_author                  String
+    sng_genre                   String
+    sng_origin                  String
+    sng_lyrics                  String?
+    sng_plc_id                  String?
+    sng_eps_id                  String?
+    sng_cmp_id                  String?
+    sng_oog_id                  String?
+    sng_created_at              DateTime                @default(now())
+    sng_updated_at              DateTime                @updatedAt
+    sng_plc                     Place?                  @relation(fields: [sng_plc_id], references: [plc_id])
+    sng_eps                     Episode?                @relation(fields: [sng_eps_id], references: [eps_id])
+    sng_cmp                     Campaign?               @relation(fields: [sng_cmp_id], references: [cmp_id])
+    sng_ext                     OutOfGameStory?         @relation(fields: [sng_oog_id], references: [oog_id])
+}

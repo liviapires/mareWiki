@@ -1,0 +1,12 @@
+model Quote {
+    qte_id                      String                  @id @default(uuid())
+    qte_quote                   String
+    qte_chr_id                  String
+    qte_source                  String
+    qte_source_url              String
+    qte_first_quote             Boolean
+    qte_last_quote              Boolean
+    qte_created_at              DateTime                @default(now())
+    qte_updated_at              DateTime                @updatedAt
+    qte_chr                     Character               @relation(fields: [qte_chr_id], references: [chr_id])
+}

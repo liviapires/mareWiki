@@ -1,0 +1,23 @@
+model Item {
+    itm_id                      String                  @id @default(uuid())
+    itm_name                    String
+    itm_description             String
+    itm_type                    String
+    itm_subtype                 String
+    itm_magical_properties      String
+    itm_value                   String
+    itm_cmp_id                  String?
+    itm_created_at              DateTime                @default(now())
+    itm_updated_at              DateTime                @updatedAt
+    itm_own                     ItemOwner[]
+}
+
+model ItemOwner {
+    iow_id                      String                  @id @default(uuid())
+    iow_chr_id                  String
+    iow_itm_id                  String
+    iow_created_at              DateTime                @default(now())
+    iow_updated_at              DateTime                @updatedAt
+    iow_chr                     Character               @relation(fields: [iow_chr_id], references: [chr_id])
+    iow_itm                     Item                    @relation(fields: [iow_itm_id], references: [itm_id])
+}

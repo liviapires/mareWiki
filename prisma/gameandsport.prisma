@@ -1,0 +1,7 @@
+model GameAndSport {
+    gam_id                      String                  @id @default(uuid())
+    gam_name                    String
+    gam_description             String
+    gam_created_at              DateTime                @default(now())
+    gam_updated_at              DateTime                @updatedAt
+}

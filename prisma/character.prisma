@@ -1,0 +1,84 @@
+model Character {
+    chr_id                      String                  @id @default(uuid())
+    chr_name                    String
+    chr_physical_description    String
+    chr_height                  String
+    chr_occupation              String
+    chr_birthday                String
+    chr_observations            String
+    chr_pronouns                Pronouns
+    chr_status                  Status
+    chr_anc_id                  String
+    chr_cls_id                  String
+    chr_sch_id                  String?
+    chr_plc_id                  String
+    chr_cmp_id                  String?
+    chr_first_appeared_eps_id   String
+    chr_last_appeared_eps_id    String
+    chr_student                 Boolean
+    chr_fty_id                  String?
+    chr_archmage                Boolean
+    chr_archmage_date           String?
+    chr_archmage_plc_id         String?
+    chr_written_by_usr_id       String
+    chr_created_by_usr_id       String
+    chr_updated_by_usr_id       String
+    chr_created_at              DateTime                @default(now())
+    chr_updated_at              DateTime                @updatedAt
+    chr_anc                     Ancestry                @relation(fields: [chr_anc_id], references: [anc_id])
+    chr_ept                     Epithet[]
+    chr_cls                     Class                   @relation(fields: [chr_cls_id], references: [cls_id])
+    chr_sch                     School?                 @relation(fields: [chr_sch_id], references: [sch_id])
+    chr_place                   Place                   @relation("PlaceCharacter", fields: [chr_plc_id], references: [plc_id])
+    chr_cmp                     Campaign?               @relation(fields: [chr_cmp_id], references: [cmp_id])
+    chr_first_appeared_eps      Episode?                @relation("FirstAppearedEpisode", fields: [chr_first_appeared_eps_id], references: [eps_id])
+    chr_last_appeared_eps       Episode?                @relation("LastAppearedEpisode", fields: [chr_last_appeared_eps_id], references: [eps_id])
+    chr_archmage_plc            Place?                  @relation("PlaceArchmage", fields: [chr_archmage_plc_id], references: [plc_id])
+    chr_fty                     Fraternity?             @relation("Fraternity", fields: [chr_fty_id], references: [fty_id])
+    chr_qte                     Quote[]    
+    chr_ctl                     CharacterTitle[]
+    chr_affiliations            Affiliation[]
+    chr_parent_rel              FamilyRelationship[]    @relation("ParentCharacter")
+    chr_child_rel               FamilyRelationship[]    @relation("ChildCharacter")
+    chr_uni_first               FamilyUnion[]           @relation("UnionCharacter1")
+    chr_uni_second              FamilyUnion[]           @relation("UnionCharacter2")
+    chr_written_by_usr          User[]                  @relation("WrittenByUser")
+    chr_created_by_usr          User[]                  @relation("CreatedByUser")
+    chr_updated_by_usr          User[]                  @relation("UpdatedByUser")
+    chr_cmp_usr                 CampaignUser[]
+    chr_alc                     AlchemicalCompound[]
+    chr_itm                     ItemOwner[]
+    chr_igb                     InGameBook[]
+    chr_fty_president           Fraternity[]            @relation("FraternityPresident")
+    chr_umf                     FraternityFounder[]
+}
+
+model Epithet {
+    ept_id                      String                  @id @default(uuid())
+    ept_name                    String
+    ept_chr_id                  String
+    ept_created_at              DateTime                @default(now())
+    ept_updated_at              DateTime                @updatedAt
+    ept_chr                     Character               @relation(fields: [ept_chr_id], references: [chr_id])
+}
+
+model CharacterTitle {
+    ctl_id                      String                  @id @default(uuid())
+    ctl_name                    String
+    ctl_description             String
+    ctl_org_id                  String?
+    ctl_chr_id                  String
+    ctl_created_at              DateTime                @default(now())
+    ctl_updated_at              DateTime                @updatedAt
+    ctl_chr                     Character               @relation(fields: [ctl_chr_id], references: [chr_id])
+    ctl_org                     Organization?           @relation(fields: [ctl_org_id], references: [org_id])
+}
+
+model Ancestry {
+    anc_id                      String                  @id @default(uuid())
+    anc_name                    String
+    anc_description             String
+    anc_created_at              DateTime                @default(now())
+    anc_updated_at              DateTime                @updatedAt
+    anc_chr                     Character[]
+}

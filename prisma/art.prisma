@@ -1,0 +1,14 @@
+model Art {
+    art_id                      String                  @id @default(uuid())
+    art_title                   String
+    art_description             String
+    art_author                  String
+    art_date                    String
+    art_materials               String
+    art_dimensions              String
+    art_type                    String
+    art_plc_id                  String?
+    art_created_at              DateTime                @default(now())
+    art_updated_at              DateTime                @updatedAt
+    art_plc                     Place?                  @relation(fields: [art_plc_id], references: [plc_id])
+}

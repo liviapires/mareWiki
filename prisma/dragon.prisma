@@ -1,0 +1,22 @@
+model Dragon {
+    drg_id                      String                  @id @default(uuid())
+    drg_name                    String
+    drg_type                    String
+    drg_form                    String
+    drg_magic                   String
+    drg_breath                  String
+    drg_description             String
+    drg_observations            String
+    drg_created_at              DateTime                @default(now())
+    drg_updated_at              DateTime                @updatedAt
+    drg_dge                     DragonEpithet[]
+}
+
+model DragonEpithet {
+    dge_id                      String                  @id @default(uuid())
+    dge_name                    String
+    dge_drg_id                  String
+    dge_created_at              DateTime                @default(now())
+    dge_updated_at              DateTime                @updatedAt
+    dge_dragon                  Dragon                  @relation(fields: [dge_drg_id], references: [drg_id])
+}

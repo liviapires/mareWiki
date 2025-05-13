@@ -1,0 +1,9 @@
+model OutOfGameStory {
+    oog_id                      String                  @id @default(uuid())
+    oog_name                    String
+    oog_description             String
+    oog_type                    OutOfGameStoryType
+    oog_created_at              DateTime                @default(now())
+    oog_updated_at              DateTime                @updatedAt
+    oog_sng                     Song[]
+}

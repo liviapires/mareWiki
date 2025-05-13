@@ -1,0 +1,11 @@
+model InGameBook {
+    igb_id                      String                  @id @default(uuid())
+    igb_name                    String
+    igb_description             String
+    igb_author_chr_id           String
+    igb_type                    String
+    igb_cmp_id                  String?
+    igb_created_at              DateTime                @default(now())
+    igb_updated_at              DateTime                @updatedAt
+    igb_chr                     Character               @relation(fields: [igb_author_chr_id], references: [chr_id])
+}

@@ -1,0 +1,71 @@
+model Beverage {
+    bvr_id                      String                  @id @default(uuid())
+    bvr_name                    String
+    bvr_description             String
+    bvr_created_at              DateTime                @default(now())
+    bvr_updated_at              DateTime                @updatedAt
+    bvr_ing                     Ingredient[]
+}
+
+model Drink {
+    drk_id                      String                  @id @default(uuid())
+    drk_name                    String
+    drk_description             String
+    drk_plc_id                  String
+    drk_created_at              DateTime                @default(now())
+    drk_updated_at              DateTime                @updatedAt
+    drk_plc                     Place                   @relation(fields: [drk_plc_id], references: [plc_id])
+    drk_ing                     Ingredient[]
+    drk_fty                     Fraternity[]
+}
+
+model Food {
+    foo_id                      String                  @id @default(uuid())
+    foo_name                    String
+    foo_description             String
+    foo_created_at              DateTime                @default(now())
+    foo_updated_at              DateTime                @updatedAt
+    foo_ing                     Ingredient[]
+}
+
+model Dish {
+    dis_id                      String                  @id @default(uuid())
+    dis_name                    String
+    dis_description             String
+    dis_plc_id                  String
+    dis_created_at              DateTime                @default(now())
+    dis_updated_at              DateTime                @updatedAt
+    dis_plc                     Place                   @relation(fields: [dis_plc_id], references: [plc_id])
+    dis_ing                     Ingredient[]
+}
+
+model AlchemicalCompound {
+    alc_id                      String                  @id @default(uuid())
+    alc_name                    String
+    alc_type                    String
+    alc_function                String
+    alc_plc_id                  String?
+    alc_chr_id                  String?
+    alc_created_at              DateTime                @default(now())
+    alc_updated_at              DateTime                @updatedAt
+    alc_ing                     Ingredient[]
+    alc_plc                     Place?                  @relation(fields: [alc_plc_id], references: [plc_id])
+    alc_chr                     Character?              @relation(fields: [alc_chr_id], references: [chr_id])
+}
+
+model Ingredient {
+    ing_id                      String                  @id @default(uuid())
+    ing_drk_id                  String?
+    ing_dis_id                  String?
+    ing_foo_id                  String?
+    ing_bvr_id                  String?
+    ing_alc_id                  String?
+    ing_quantity                String
+    ing_created_at              DateTime                @default(now())
+    ing_updated_at              DateTime                @updatedAt
+    ing_drk                     Drink?                  @relation(fields: [ing_drk_id], references: [drk_id])
+    ing_dis                     Dish?                   @relation(fields: [ing_dis_id], references: [dis_id])
+    ing_foo                     Food?                   @relation(fields: [ing_foo_id], references: [foo_id])
+    ing_bvr                     Beverage?               @relation(fields: [ing_bvr_id], references: [bvr_id])
+    ing_alc                     AlchemicalCompound?     @relation(fields: [ing_alc_id], references: [alc_id])
+}

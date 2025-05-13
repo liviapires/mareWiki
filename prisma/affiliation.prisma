@@ -1,0 +1,15 @@
+model Affiliation {
+    aff_id                      String                  @id @default(uuid())
+    aff_role                    String
+    aff_leader                  Boolean
+    aff_chr_id                  String
+    aff_plc_id                  String?
+    aff_org_id                  String?
+    aff_mgt_id                  String?
+    aff_created_at              DateTime                @default(now())
+    aff_updated_at              DateTime                @updatedAt
+    aff_chr                     Character               @relation(fields: [aff_chr_id], references: [chr_id])
+    aff_org                     Organization?           @relation(fields: [aff_org_id], references: [org_id])
+    aff_plc                     Place?                  @relation(fields: [aff_plc_id], references: [plc_id])
+    aff_mgt                     MagobolTeam?            @relation(fields: [aff_mgt_id], references: [mgt_id])
+}

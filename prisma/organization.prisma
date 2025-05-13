@@ -1,0 +1,26 @@
+model Organization {
+    org_id                      String                  @id @default(uuid())
+    org_description             String
+    org_foundation_date         String
+    org_observations            String
+    org_plc_id                  String?
+    org_created_by_usr_id       String
+    org_created_at              DateTime                @default(now())
+    org_updated_at              DateTime                @updatedAt
+    org_aff                     Affiliation[]
+    org_plc                     Place?                  @relation(fields: [org_plc_id], references: [plc_id])
+    org_created_by_usr          User                    @relation(fields: [org_created_by_usr_id], references: [usr_id])
+    org_ttl                     CharacterTitle[]
+    org_names                   OrganizationName[]
+}
+
+model OrganizationName {
+    orn_id                      String                  @id @default(uuid())
+    orn_org_id                  String
+    orn_name                    String
+    orn_description             String
+    orn_main_name               Boolean
+    orn_created_at              DateTime                @default(now())
+    orn_updated_at              DateTime                @updatedAt
+    orn_org                     Organization            @relation(fields: [orn_org_id], references: [org_id])
+}
